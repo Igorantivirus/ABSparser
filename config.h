@@ -15,7 +15,8 @@ struct Config {
     std::string url_abserver;
     std::string api_pass;
     std::string SUPER_SECRET_KEY;
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Config, logs_path, main_server_ip, main_server_port, url_abserver, api_pass, SUPER_SECRET_KEY)
+    std::string latest_length_path;
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Config, logs_path, main_server_ip, main_server_port, url_abserver, api_pass, latest_length_path, SUPER_SECRET_KEY)
 };
 
 inline Config loadConfig(const std::string &config_path) {

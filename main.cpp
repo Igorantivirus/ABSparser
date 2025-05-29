@@ -25,6 +25,17 @@ Config config;
 
 void extractMessages(const string& logFilePath, list<string>& queue) {
     static streamsize latestLength = 0;
+    static bool firstRun = true;
+    if (firstRun) {
+        firstRun = false;
+        ifstream ifs(config.latest_length_path);
+        if (ifs.is_open()) {
+            ifs >> latestLength;
+            ifs.close();
+        }
+    }
+    
+
     ifstream logFile(logFilePath, ios::in | ios::binary);
     if (!logFile.is_open()) {
         cerr << "Error: Unable to open log file: " << logFilePath << endl;
@@ -36,6 +47,11 @@ void extractMessages(const string& logFilePath, list<string>& queue) {
     logFile.clear();
     logFile.seekg(length < latestLength ? streamsize(0) : latestLength, ios_base::beg);
     latestLength = length;
+    ofstream ofs(config.latest_length_path);
+    if (ofs.is_open()) {
+        ofs << latestLength;
+        ofs.close();
+    }
 
     string line;
     while (getline(logFile, line)) {
